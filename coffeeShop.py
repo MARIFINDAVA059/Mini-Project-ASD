@@ -12,19 +12,19 @@ class CoffeeShop:
       }
       self.users = {}
       self.orders = {}
-      self.logged_in_user = None
-      self.nama_customer = None
+      self.loggedInUser = None
+      self.customerName = None
       self.total_income = 0 
 
-   def display_menu_and_stock(self):
+   def displayMenuAndStock(self):
       table = PrettyTable(["Menu", "Price", "Stock"])
       for item, info in self.items.items():
             table.add_row([item, info["price"], info["stock"]])
       print("Coffee Shop Menu and Stock")
       print(table)
 
-   def update_menu_and_stock(self):
-      self.display_menu_and_stock()
+   def updateMenuAndStock(self):
+      self.displayMenuAndStock()
       item = input("Enter the item to update: ")
       if item in self.items:
             price = int(input("Enter the new price: "))
@@ -35,8 +35,8 @@ class CoffeeShop:
       else:
             print(f"Menu item '{item}' not found.")
 
-   def delete_menu(self):
-      self.display_menu_and_stock()
+   def deleteMenu(self):
+      self.displayMenuAndStock()
       item = input("Enter the item to delete: ")
       if item in self.items:
             del self.items[item]
@@ -44,17 +44,17 @@ class CoffeeShop:
       else:
             print(f"Menu item '{item}' not found.")
 
-   def place_order(self, customer_name, coffee_name, quantity):
-      if customer_name in self.orders:
-         if coffee_name in self.orders[customer_name]:
-            self.orders[customer_name][coffee_name] += quantity
+   def placeOrder(self, customerName, coffeeName, quantity):
+      if customerName in self.orders:
+         if coffeeName in self.orders[customerName]:
+            self.orders[customerName][coffeeName] += quantity
          else:
-            self.orders[customer_name][coffee_name] = quantity
+            self.orders[customerName][coffeeName] = quantity
       else:
-         self.orders[customer_name] = {coffee_name: quantity}
+         self.orders[customerName] = {coffeeName: quantity}
 
 
-   def register_user(self, username, password):
+   def registerUser(self, username, password):
       if username not in self.users:
             self.users[username] = {"password": password, "role": "customer", "balance": 0}
             print("Registration successful.")
@@ -63,36 +63,36 @@ class CoffeeShop:
 
    def login(self, username, password):
       if username in self.users and self.users[username]["password"] == password:
-            self.logged_in_user = username
+            self.loggedInUser = username
             return True
       return False
 
-   def save_invoice_to_txt(self, customer_name, customer_order, total_bill):
-      with open(f'{customer_name}_invoice.txt', 'w') as invoice_file:
-            invoice_file.write("CoffeeShop Invoice\n")
-            invoice_file.write(f"Customer Name: {customer_name}\n")
-            for coffee, quantity in customer_order.items():
-               invoice_file.write(f"{coffee}: {quantity}\n")
-            invoice_file.write(f"Total Bill: Rp. {total_bill:.2f}\n")
+   def invoices(self, customerName, customerOrder, totalBill):
+      with open(f'{customerName}_invoice.txt', 'w') as invoice:
+            invoice.write("CoffeeShop Invoice\n")
+            invoice.write(f"Customer Name: {customerName}\n")
+            for coffee, quantity in customerOrder.items():
+               invoice.write(f"{coffee}: {quantity}\n")
+            invoice.write(f"Total Bill: Rp. {totalBill:.2f}\n")
 
-   def generate_invoice(self, customer_name, customer_order, total_bill):
+   def generateInvoice(self, customerName, customerOrder, totalBill):
       invoice = PrettyTable()
       invoice.field_names = ["CoffeeShop", "Invoice"]
-      invoice.add_row(["Customer Name:", customer_name])
+      invoice.add_row(["Customer Name:", customerName])
       invoice.add_row(["Transaction Time:", datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
-      for coffee, quantity in customer_order.items():
+      for coffee, quantity in customerOrder.items():
             invoice.add_row([coffee, f"{quantity}"])
-      invoice.add_row(["Total Bill:", f"Rp. {total_bill:.2f}"])
+      invoice.add_row(["Total Bill:", f"Rp. {totalBill:.2f}"])
       print(invoice)
-      self.save_invoice_to_txt(customer_name, customer_order, total_bill)
+      self.invoices(customerName, customerOrder, totalBill)
 
    def register(self):
       print("Welcome To Coffee Shop \nPlease Register First❤️")
       username = input("Enter your username: ")
       password = input("Enter your password: ")
-      self.register_user(username, password)
+      self.registerUser(username, password)
 
-   def login_screen(self):
+   def loginScreen(self):
       while True:
             print("Login Your Account✌️")
             username = input("Enter your username: ")
@@ -103,7 +103,7 @@ class CoffeeShop:
             else:
                print("Invalid username or password. Please try again.")
 
-   def display_main_menu(self):
+   def displayMainMenu(self):
       main_menu = PrettyTable()
       main_menu.field_names = ["Features", "CoffeeShop Hanei"]
       main_menu.add_row(["1", "Display Menu & Stock"])
@@ -115,20 +115,20 @@ class CoffeeShop:
       main_menu.add_row(["7", "Exit"])
       print(main_menu)
 
-   def display_total_income(self):
+   def displayTotalIncome(self):
       print(f"Total Income: Rp. {self.total_income}")
 
-   def display_orders(self):
+   def displayOrders(self):
       orders_table = PrettyTable(["Customer Name", "Order"])
       for customer, order in self.orders.items():
          if isinstance(order, int):
-            coffee_name = None
+            coffeeName = None
             for coffee, info in self.items.items():
                if info["price"] == order:
-                  coffee_name = coffee
+                  coffeeName = coffee
                   break
-            if coffee_name:
-               orders_table.add_row([customer, f"{order} x {coffee_name}"])
+            if coffeeName:
+               orders_table.add_row([customer, f"{order} x {coffeeName}"])
             else:
                print("Error: No item found with the specified price.")
          else:
@@ -140,36 +140,36 @@ class CoffeeShop:
 
 coffee_shop = CoffeeShop()
 coffee_shop.register()
-coffee_shop.login_screen()
+coffee_shop.loginScreen()
 
 while True:
-   coffee_shop.display_main_menu()
+   coffee_shop.displayMainMenu()
    choice = input("Enter your choice: ")
 
    if choice == '1':
-      coffee_shop.display_menu_and_stock()
+      coffee_shop.displayMenuAndStock()
    elif choice == '2':
-      coffee_shop.update_menu_and_stock()
+      coffee_shop.updateMenuAndStock()
    elif choice == '3':
-      coffee_shop.delete_menu()
+      coffee_shop.deleteMenu()
    elif choice == '4':
-      coffee_shop.display_menu_and_stock()
-      customer_name = input("Enter your name: ")
+      coffee_shop.displayMenuAndStock()
+      customerName = input("Enter your name: ")
       coffee = input("Enter the coffee that been ordered : ")
       quantity = int(input("Enter the quantity: "))
       if coffee in coffee_shop.items and coffee_shop.items[coffee]["stock"] >= quantity:
-         total_bill = coffee_shop.items[coffee]["price"] * quantity
-         coffee_shop.place_order(customer_name, coffee, quantity)
-         print(f"Order placed successfully. Total Bill: Rp. {total_bill:.2f}")
+         totalBill = coffee_shop.items[coffee]["price"] * quantity
+         coffee_shop.placeOrder(customerName, coffee, quantity)
+         print(f"Order placed successfully. Total Bill: Rp. {totalBill:.2f}")
          coffee_shop.items[coffee]["stock"] -= quantity
-         coffee_shop.generate_invoice(customer_name, {coffee: quantity}, total_bill)
-         coffee_shop.total_income += total_bill 
+         coffee_shop.generateInvoice(customerName, {coffee: quantity}, totalBill)
+         coffee_shop.total_income += totalBill 
       else:
          print("Invalid coffee selection or insufficient stock.")
    elif choice == '5':
-      coffee_shop.display_orders() 
+      coffee_shop.displayOrders() 
    elif choice == '6':
-      coffee_shop.display_total_income() 
+      coffee_shop.displayTotalIncome() 
    elif choice == '7':
       print("Thank you for using the Coffee Shop system.")
       break
